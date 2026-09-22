@@ -102,5 +102,15 @@ namespace Circuits
         {
             return _value;
         }
+
+        /// <summary>
+        /// Returns a clone of this gate
+        /// </summary>
+        /// <returns></returns>
+        public override Gate Clone()
+        {
+            Gate newGate = new InputSource(0, 0);
+            return newGate;
+        }
     }
 }

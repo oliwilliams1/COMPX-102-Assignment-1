@@ -115,5 +115,11 @@ namespace Circuits
         /// Evaluates the value of this gate
         /// </summary>
         public abstract bool Evaluate();
+
+        /// <summary>
+        /// Returns a copy of self
+        /// </summary>
+        /// <returns></returns>
+        public abstract Gate Clone();
     }
 }

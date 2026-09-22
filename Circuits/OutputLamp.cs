@@ -92,12 +92,24 @@ namespace Circuits
         /// <returns></returns>
         public override bool Evaluate()
         {
+            if (pins[0].InputWire == null) return false;
+
             // Get input gate
             Gate input = pins[0].InputWire.FromPin.Owner;
             
             // Update internal state the the result of the input gate and return this state
             _value = input.Evaluate();
             return _value;
+        }
+
+        /// <summary>
+        /// Returns a clone of this gate
+        /// </summary>
+        /// <returns></returns>
+        public override Gate Clone()
+        {
+            Gate newGate = new OutputLamp(0, 0);
+            return newGate;
         }
     }
 }

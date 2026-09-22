@@ -71,11 +71,23 @@ namespace Circuits
         /// <returns></returns>
         public override bool Evaluate()
         {
+            if (pins[1].InputWire == null) return false;
+
             // Get input gate
             Gate input = pins[0].InputWire.FromPin.Owner;
 
             // Return a NOT operation on the value of the input gate
             return !input.Evaluate();
+        }
+
+        /// <summary>
+        /// Returns a clone of this gate
+        /// </summary>
+        /// <returns></returns>
+        public override Gate Clone()
+        {
+            Gate newGate = new NotGate(0, 0);
+            return newGate;
         }
     }
 }

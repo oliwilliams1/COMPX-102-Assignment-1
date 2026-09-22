@@ -252,6 +252,13 @@ namespace Circuits
             this.Invalidate();
         }
 
+        private void toolStripButtonCopy_Click(object sender, EventArgs e)
+        {
+            if (current == null) return;
+
+            newGate = current.Clone();
+        }
+
         /// <summary>
         /// Handles events while the mouse button is pressed down.
         /// </summary>
