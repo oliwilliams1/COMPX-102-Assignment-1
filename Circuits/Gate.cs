@@ -90,6 +90,8 @@ namespace Circuits
                 return false;
         }
 
+        public virtual void OnMouse() { }
+
         /// <summary>
         /// Draws the gate in the normal colour or in the selected colour.
         /// </summary>

@@ -9,22 +9,22 @@ using System.Threading.Tasks;
 namespace Circuits
 {
     /// <summary>
-    /// This class implements a not gate with one inputs
-    /// and one output.
+    /// This class implements an output lamp
     /// </summary>
-    public class NotGate : Gate
+    public class OutputLamp : Gate
     {
+        // Variables
+        protected bool _value;  // true = high voltage, false = low voltage
+
         /// <summary>
         /// Initialises the Gate.
         /// </summary>
         /// <param name="x">The x position of the gate</param>
         /// <param name="y">The y position of the gate</param>
-        public NotGate(int x, int y)
+        public OutputLamp(int x, int y)
         {
             //Add the input pin to the gate
             pins.Add(new Pin(this, true, 20));
-            //Add the output pin to the gate
-            pins.Add(new Pin(this, false, 20));
 
             MoveTo(x, y);
         }
@@ -39,11 +39,39 @@ namespace Circuits
             foreach (Pin p in pins)
                 p.Draw(paper);
 
-            // Draw Gate
-            if (selected)
-                paper.DrawImage(Properties.Resources.NotGateAllRed, Left, Top, WIDTH, HEIGHT);
+            // Select the colour based on value
+            Brush brush;
+            if (_value)
+                brush = Brushes.Green;
             else
-                paper.DrawImage(Properties.Resources.NotGate, Left, Top, WIDTH, HEIGHT);
+                brush = Brushes.Gray;
+
+            // Draw Gate
+            paper.FillEllipse(brush, left, top, WIDTH, HEIGHT);
+
+            // Select colour for border based on selection state
+            Color color;
+            if (selected)
+                color = Color.Red;
+            else
+                color = Color.Black;
+
+            using (Pen pen = new Pen(color, 10))
+            {
+                // Draw the border
+                paper.DrawEllipse(
+                    pen,
+                    left + 5,
+                    top + 5,
+                    WIDTH - 10,
+                    HEIGHT - 10
+                );
+            }
+        }
+
+        public override void OnMouse()
+        {
+            _value = !_value;
         }
 
         /// <summary>
@@ -61,8 +89,6 @@ namespace Circuits
             // must move the pins too
             pins[0].X = x - GAP;
             pins[0].Y = y + HEIGHT / 2;
-            pins[1].X = x + WIDTH + GAP;
-            pins[1].Y = y + HEIGHT / 2;
         }
     }
 }

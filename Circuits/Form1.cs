@@ -181,9 +181,34 @@ namespace Circuits
             newGate = new OrGate(0, 0);
         }
         
+        /// <summary>
+        /// This will create a new Not gate.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toolStripButtonNot_Click(object sender, EventArgs e)
         {
             newGate = new NotGate(0, 0);
+        }
+
+        /// <summary>
+        /// This will create a new input source.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripButtonInput_Click(object sender, EventArgs e)
+        {
+            newGate = new InputSource(0, 0);
+        }
+
+        /// <summary>
+        /// This will create a new output lamp.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripButtonOutput_Click(object sender, EventArgs e)
+        {
+            newGate = new OutputLamp(0, 0);
         }
 
         /// <summary>
@@ -218,7 +243,6 @@ namespace Circuits
             }
         }
 
-
         /// <summary>
         /// Handles events while the mouse button is pressed down.
         /// </summary>
@@ -248,6 +272,11 @@ namespace Circuits
         /// <param name="e"></param>
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
+            // Top-down event manager 
+            foreach (Gate g in gatesList)
+                if (g.IsMouseOn(e.X, e.Y))
+                    g.OnMouse();
+            
             //Check if a gate is currently selected
             if (current != null)
             {
