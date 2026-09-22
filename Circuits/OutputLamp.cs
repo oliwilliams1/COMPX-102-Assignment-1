@@ -56,22 +56,17 @@ namespace Circuits
             else
                 color = Color.Black;
 
-            using (Pen pen = new Pen(color, 10))
+            using (Pen pen = new Pen(color, BORDER))
             {
                 // Draw the border
                 paper.DrawEllipse(
                     pen,
-                    left + 5,
-                    top + 5,
-                    WIDTH - 10,
-                    HEIGHT - 10
+                    left + BORDER / 2,
+                    top + BORDER / 2,
+                    WIDTH - BORDER,
+                    HEIGHT - BORDER
                 );
             }
-        }
-
-        public override void OnMouse()
-        {
-            _value = !_value;
         }
 
         /// <summary>
@@ -89,6 +84,20 @@ namespace Circuits
             // must move the pins too
             pins[0].X = x - GAP;
             pins[0].Y = y + HEIGHT / 2;
+        }
+
+        /// <summary>
+        /// Evaluates input and updates internal state
+        /// </summary>
+        /// <returns></returns>
+        public override bool Evaluate()
+        {
+            // Get input gate
+            Gate input = pins[0].InputWire.FromPin.Owner;
+            
+            // Update internal state the the result of the input gate and return this state
+            _value = input.Evaluate();
+            return _value;
         }
     }
 }

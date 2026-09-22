@@ -67,5 +67,19 @@ namespace Circuits
             pins[2].X = x + WIDTH + GAP;
             pins[2].Y = y + HEIGHT / 2;
         }
+
+        /// <summary>
+        /// Performs an OR operation on the two inputs
+        /// </summary>
+        /// <returns></returns>
+        public override bool Evaluate()
+        {
+            // Get input gates
+            Gate input1 = pins[0].InputWire.FromPin.Owner;
+            Gate input2 = pins[1].InputWire.FromPin.Owner;
+
+            // Return an OR operation on the values of the input gates
+            return input1.Evaluate() || input2.Evaluate();
+        }
     }
 }

@@ -34,6 +34,7 @@
             this.toolStripButtonNot = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonInput = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonOutput = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonEvaluate = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -45,7 +46,8 @@
             this.toolStripButtonOr,
             this.toolStripButtonNot,
             this.toolStripButtonInput,
-            this.toolStripButtonOutput});
+            this.toolStripButtonOutput,
+            this.toolStripButtonEvaluate});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1008, 25);
@@ -102,6 +104,16 @@
             this.toolStripButtonOutput.Text = "toolStripButton1";
             this.toolStripButtonOutput.Click += new System.EventHandler(this.toolStripButtonOutput_Click);
             // 
+            // toolStripButtonEvaluate
+            // 
+            this.toolStripButtonEvaluate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonEvaluate.Image = global::Circuits.Properties.Resources.EvaluateIcon;
+            this.toolStripButtonEvaluate.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonEvaluate.Name = "toolStripButtonEvaluate";
+            this.toolStripButtonEvaluate.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonEvaluate.Text = "toolStripButton1";
+            this.toolStripButtonEvaluate.Click += new System.EventHandler(this.toolStripButtonEvaluate_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -132,6 +144,7 @@
         private System.Windows.Forms.ToolStripButton toolStripButtonNot;
         private System.Windows.Forms.ToolStripButton toolStripButtonInput;
         private System.Windows.Forms.ToolStripButton toolStripButtonOutput;
+        private System.Windows.Forms.ToolStripButton toolStripButtonEvaluate;
     }
 }
 

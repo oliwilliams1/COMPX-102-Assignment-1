@@ -243,6 +243,15 @@ namespace Circuits
             }
         }
 
+        private void toolStripButtonEvaluate_Click(object sender, EventArgs e)
+        {
+            foreach (Gate g in gatesList)
+                if (g is OutputLamp)
+                    g.Evaluate();
+
+            this.Invalidate();
+        }
+
         /// <summary>
         /// Handles events while the mouse button is pressed down.
         /// </summary>
@@ -275,7 +284,7 @@ namespace Circuits
             // Top-down event manager 
             foreach (Gate g in gatesList)
                 if (g.IsMouseOn(e.X, e.Y))
-                    g.OnMouse();
+                    g.OnMouseClick();
             
             //Check if a gate is currently selected
             if (current != null)

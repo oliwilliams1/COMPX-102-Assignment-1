@@ -56,17 +56,25 @@ namespace Circuits
             else
                 color = Color.Black;
 
-            using (Pen pen = new Pen(color, 10))
+            using (Pen pen = new Pen(color, BORDER))
             {
                 // Draw the border
                 paper.DrawRectangle(
                     pen,
-                    left + 5,
-                    top + 5,
-                    WIDTH - 10,
-                    HEIGHT - 10
+                    left + BORDER / 2,
+                    top + BORDER / 2,
+                    WIDTH - BORDER,
+                    HEIGHT - BORDER
                 );
             }
+        }
+
+        /// <summary>
+        /// Toggles the value of this
+        /// </summary>
+        public override void OnMouseClick()
+        {
+            _value = !_value;
         }
 
         /// <summary>
@@ -84,6 +92,15 @@ namespace Circuits
             // must move the pins too
             pins[0].X = x + WIDTH + GAP;
             pins[0].Y = y + HEIGHT / 2;
+        }
+
+        /// <summary>
+        /// Returs the internal state
+        /// </summary>
+        /// <returns></returns>
+        public override bool Evaluate()
+        {
+            return _value;
         }
     }
 }

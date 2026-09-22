@@ -64,5 +64,18 @@ namespace Circuits
             pins[1].X = x + WIDTH + GAP;
             pins[1].Y = y + HEIGHT / 2;
         }
+
+        /// <summary>
+        /// Inverts the input gate
+        /// </summary>
+        /// <returns></returns>
+        public override bool Evaluate()
+        {
+            // Get input gate
+            Gate input = pins[0].InputWire.FromPin.Owner;
+
+            // Return a NOT operation on the value of the input gate
+            return !input.Evaluate();
+        }
     }
 }

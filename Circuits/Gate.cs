@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Circuits
 {
-    public class Gate
+    public abstract class Gate
     {
         // left is the left-hand edge of the main part of the gate.
         // So the input pins are further left than left.
@@ -15,6 +15,9 @@ namespace Circuits
 
         // top is the top of the whole gate
         protected int top;
+
+        // border size
+        protected int BORDER = 4;
 
         // width and height of the main part of the gate
         protected const int WIDTH = 40;
@@ -90,60 +93,27 @@ namespace Circuits
                 return false;
         }
 
-        public virtual void OnMouse() { }
+        /// <summary>
+        /// For gates to have a click event
+        /// </summary>
+        public virtual void OnMouseClick() { }
 
         /// <summary>
         /// Draws the gate in the normal colour or in the selected colour.
         /// </summary>
         /// <param name="paper"></param>
-        public virtual void Draw(Graphics paper)
-        {
-            Brush brush;
-            //Check if the gate has been selected
-            if (selected)
-            {
-                brush = selectedBrush;
-            }
-            else
-            {
-                brush = normalBrush;
-            }
-            //Draw each of the pins
-            foreach (Pin p in pins)
-                p.Draw(paper);
-
-            // AND is simple, so we can use a circle plus a rectange.
-            // An alternative would be to use a bitmap.
-            paper.FillEllipse(brush, left, top, WIDTH, HEIGHT);
-            paper.FillRectangle(brush, left, top, WIDTH / 2, HEIGHT);
-
-            //Note: You can also use the images that have been imported into the project if you wish,
-            //      using the code below.  You will need to space the pins out a bit more in the constructor.
-            //      There are provided images for the other gates and selected versions of the gates as well.
-            //paper.DrawImage(Properties.Resources.AndGate, Left, Top);
-
-
-        }
+        public abstract void Draw(Graphics paper);
 
         /// <summary>
         /// Moves the gate to the position specified.
         /// </summary>
         /// <param name="x">The x position to move the gate to</param>
         /// <param name="y">The y position to move the gate to</param>
-        public virtual void MoveTo(int x, int y)
-        {
-            //Debugging message
-            Console.WriteLine("pins = " + pins.Count);
-            //Set the position of the gate to the values passed in
-            left = x;
-            top = y;
-            // must move the pins too
-            pins[0].X = x - GAP;
-            pins[0].Y = y + GAP;
-            pins[1].X = x - GAP;
-            pins[1].Y = y + HEIGHT - GAP;
-            pins[2].X = x + WIDTH + GAP;
-            pins[2].Y = y + HEIGHT / 2;
-        }
+        public abstract void MoveTo(int x, int y);
+
+        /// <summary>
+        /// Evaluates the value of this gate
+        /// </summary>
+        public abstract bool Evaluate();
     }
 }
