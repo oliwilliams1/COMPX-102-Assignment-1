@@ -1,0 +1,11 @@
+Q1: Is it a better idea to fully document the Gate class or the AndGate subclass? Can you inherit comments?
+A: You can inherit documentation, but it is not default behaviour. Could be argued that it matters about the stage your on, but in this specific example, it makes sense to fully docuemnt the Gate superclass, as that is what you interface with in the application logic more, with specific derived type based methods rarely ever being called. (few instances of is/as).
+
+Q2: What is the advantage of making a method abstract in the superclass rather than just writing a virual method with no code in the body of the method? Is there any disadvantage to an abstract method?
+A: Abstract methods require the derived classes to define an override before compilation. This is extremely useful where derived classes have their own behaviour that is not shared-- for example a primative superclass with rect, text, image, etc deriving from it, overriding the reqruied draw function. The disadvantage to using abstract methods in the base class is only when you want a base case to operate, or at least one of the derived cases do not need to / can not override that default behaviour. 
+
+Q3: If a class has an abstract method in it, does the class have to be abstract?
+A: Yes, enforces good application design. Signifies that the class is not complete and some things have to be done to inherit the base behaviour of the superclass.
+
+Q4: What would happen in your program if one of the gates added to your Compound Gate is another Compound Gate? Is your design robust enough to cope with this situaion?
+A: It works as normal. I designed this program in a way where Compound Gates control the entire state of its children, exposing children recursivly to the root document, with hit detection and behaviour working properly as the state is managed by one sole owner, rather than having references everywhere and double instances etc.
