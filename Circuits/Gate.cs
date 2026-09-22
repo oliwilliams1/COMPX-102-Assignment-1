@@ -70,7 +70,7 @@ namespace Circuits
         /// <summary>
         /// Gets the list of pins for the gate.
         /// </summary>
-        public List<Pin> Pins
+        public virtual List<Pin> Pins
         {
             get { return pins; }
         }
@@ -93,7 +93,7 @@ namespace Circuits
         /// <summary>
         /// For gates to have a click event
         /// </summary>
-        public virtual void OnMouseClick() { }
+        public virtual void OnMouseClick(int x, int y) { }
 
         /// <summary>
         /// Draws the gate in the normal colour or in the selected colour.

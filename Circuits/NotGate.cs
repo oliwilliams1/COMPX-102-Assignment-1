@@ -71,7 +71,7 @@ namespace Circuits
         /// <returns></returns>
         public override bool Evaluate()
         {
-            if (pins[1].InputWire == null) return false;
+            if (pins[0].InputWire == null) return false;
 
             // Get input gate
             Gate input = pins[0].InputWire.FromPin.Owner;

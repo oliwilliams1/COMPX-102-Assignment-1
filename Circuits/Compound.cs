@@ -12,7 +12,47 @@ namespace Circuits
     /// </summary>
     public class Compound : Gate
     {
-        protected List<Gate> gates = new List<Gate>();
+        /// <summary>
+        /// Used to store the relative offsets with the gate to preserve spacings
+        /// </summary>
+        protected struct GateWithInfo
+        {
+            /// <summary>
+            /// Construct this isntance with gate, rel x, and rel y
+            /// </summary>
+            /// <param name="g"></param>
+            /// <param name="dx"></param>
+            /// <param name="dy"></param>
+            public GateWithInfo(Gate g, int dx, int dy)
+            {
+                this.gate = g;
+                this.dx = dx;
+                this.dy = dy;
+            }
+            // Member variables
+            public Gate gate;
+            public int dx;
+            public int dy;
+        }
+        
+        // List of gates in this context
+        protected List<GateWithInfo> gateWithInfos = new List<GateWithInfo>();
+
+        /// <summary>
+        /// Exposes the gates to the root context
+        /// </summary>
+        public List<Gate> Gates
+        {
+            get
+            {
+                // Expose the gates
+                List<Gate> gates = new List<Gate>();
+                foreach (GateWithInfo gInfo in gateWithInfos)
+                    gates.Add(gInfo.gate);
+
+                return gates;
+            }
+        }
 
         /// <summary>
         /// Creates a compound gate given x, y
@@ -31,7 +71,29 @@ namespace Circuits
         /// <param name="gate"></param>
         public void AddGate(Gate gate)
         {
-            gates.Add(gate);
+            // Get rel x and rel y
+            int dx = gate.Left - left;
+            int dy = gate.Top - top;
+
+            // Package gate with rel positioning
+            GateWithInfo gInfo = new GateWithInfo(gate, dx, dy);
+            gateWithInfos.Add(gInfo);
+        }
+
+        /// <summary>
+        /// Adds a gate with specified relative coordinates
+        /// </summary>
+        /// <param name="gate"></param>
+        /// <param name="dx"></param>
+        /// <param name="dy"></param>
+        public void AddGate(Gate gate, int dx, int dy)
+        {
+            // Sets the coords
+            gate.MoveTo(left + dx, top + dy);
+
+            // Package gate with rel positioning
+            GateWithInfo gInfo = new GateWithInfo(gate, dx, dy);
+            gateWithInfos.Add(gInfo);
         }
 
         /// <summary>
@@ -41,15 +103,13 @@ namespace Circuits
         /// <param name="y"></param>
         public override void MoveTo(int x, int y)
         {
-            // Apply dy & dx to children
-            int dx = x - left;
-            int dy = y - top;
-
+            // Update compound pos
             left = x;
             top = y;
 
-            foreach (Gate g in gates)
-                g.MoveTo(g.Left + dx, g.Top + dy);
+            // Moves to rel coords
+            foreach (GateWithInfo gInfo in gateWithInfos)
+                gInfo.gate.MoveTo(left + gInfo.dx, top + gInfo.dy);
         }
 
         /// <summary>
@@ -59,8 +119,40 @@ namespace Circuits
         public override void Draw(Graphics paper)
         {
             // Iterate through all child gates and renders them
-            foreach (Gate g in gates)
-                g.Draw(paper);
+            foreach (GateWithInfo gInfo in gateWithInfos)
+                gInfo.gate.Draw(paper);
+
+            // Draw wires
+            foreach (GateWithInfo gInfo in gateWithInfos)
+            {
+                foreach (Pin p in gInfo.gate.Pins)
+                {
+                    if (!p.IsInput || p.InputWire == null)
+                        continue;
+
+                    Gate fromGate = p.InputWire.FromPin.Owner;
+                    foreach (var x in gateWithInfos)
+                        if (x.gate == fromGate)
+                            p.InputWire.Draw(paper);
+                            break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Expose the compounds pins
+        /// </summary>
+        public override List<Pin> Pins
+        {
+            get
+            {
+                // Expose the pins
+                List<Pin> allPins = new List<Pin>();
+                foreach (GateWithInfo gInfo in gateWithInfos)
+                    allPins.AddRange(gInfo.gate.Pins);
+
+                return allPins;
+            }
         }
 
         /// <summary>
@@ -70,29 +162,36 @@ namespace Circuits
         {
             get
             {
-                if (gates.Count == 0) return false;
+                if (gateWithInfos.Count == 0) return false;
 
-                foreach (Gate g in gates)
-                    if (g.Selected == false)
+                // if any are not selected, the component is deemed unselected
+                foreach (GateWithInfo gInfo in gateWithInfos)
+                    if (gInfo.gate.Selected == false)
                         return false;
                 
+                // otherwise, we are selected
                 return true;
             }
             set
             {
                 // Disperse this update to all child gates
-                foreach (Gate g in gates)
-                    g.Selected = value;
+                foreach (GateWithInfo gInfo in gateWithInfos)
+                    gInfo.gate.Selected = value;
             }
         }
 
         /// <summary>
-        /// This is never called, return false
+        /// Same thing as in form1
         /// </summary>
         /// <returns></returns>
         public override bool Evaluate()
         {
-            return false;
+            // Eval the children of this
+            foreach (GateWithInfo gInfo in gateWithInfos)
+                if (gInfo.gate is OutputLamp || gInfo.gate is Compound)
+                    gInfo.gate.Evaluate();
+
+            return false; // collection of multiple states
         }
 
         /// <summary>
@@ -101,14 +200,58 @@ namespace Circuits
         /// <returns></returns>
         public override Gate Clone()
         {
-            // Create a new compound clone
-            Compound clone = new Compound(0, 0);
+            // Create the clone component
+            Compound clone = new Compound(left, top);
 
-            // Adds all child gates to the clone
-            foreach (Gate g in gates)
-                clone.AddGate(g);
+            // Map original to clone
+            Dictionary<Gate, Gate> map = new Dictionary<Gate, Gate>();
 
-            // Return the final constructed clone
+            // Iterate through originals
+            foreach (GateWithInfo gInfo in gateWithInfos)
+            {
+                // Clone each original gate and store reference into map for later
+                Gate gClone = gInfo.gate.Clone();
+                map[gInfo.gate] = gClone;
+
+                // Add the clone gate into the clone compound with relative positioning data
+                clone.AddGate(gClone, gInfo.dx, gInfo.dy);
+            }
+
+            // Rebuild wires on clone
+            foreach (GateWithInfo gInfo in gateWithInfos)
+            {
+                // Get original and clone gate for readability
+                Gate originalGate = gInfo.gate;
+                Gate clonedGate = map[originalGate];
+
+                // Iterate through all pins of original and copy structure to clone
+                for (int i = 0; i < originalGate.Pins.Count; i++)
+                {
+                    Pin originalPin = originalGate.Pins[i];
+                    if (!originalPin.IsInput || originalPin.InputWire == null)
+                        continue;
+
+                    // Get where this pin is from
+                    Pin fromPin = originalPin.InputWire.FromPin;
+                    Gate fromGate = fromPin.Owner;
+
+                    // If fromGate is NOT within the original component, stop
+                    if (!map.ContainsKey(fromGate))
+                        continue;
+
+                    // Else, find the clone counterpart
+                    Gate clonedFromGate = map[fromGate];
+                    int fromPinIndex = fromGate.Pins.IndexOf(fromPin);
+
+                    Pin clonedFromPin = clonedFromGate.Pins[fromPinIndex];
+                    Pin clonedToPin = clonedGate.Pins[i];
+                    
+                    // Wire up the clone counterpart
+                    clonedToPin.InputWire = new Wire(clonedFromPin, clonedToPin);
+                }
+            }
+
+            // Return the finished clone
             return clone;
         }
 
@@ -120,11 +263,23 @@ namespace Circuits
         /// <returns></returns>
         public override bool IsMouseOn(int x, int y)
         {
-            foreach (Gate g in gates)
-                if (g.IsMouseOn(x, y))
+            foreach (GateWithInfo gInfo in gateWithInfos)
+                if (gInfo.gate.IsMouseOn(x, y))
                     return true;
 
             return false;
+        }
+
+        /// <summary>
+        /// Pass the OnMouseClick to children
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        public override void OnMouseClick(int x, int y)
+        {
+            foreach (GateWithInfo gInfo in gateWithInfos)
+                if (gInfo.gate.IsMouseOn(x, y))
+                    gInfo.gate.OnMouseClick(x, y);
         }
     }
 }

@@ -97,7 +97,7 @@ namespace Circuits
                 Console.WriteLine("wire from " + startPin + " to " + e.X + "," + e.Y);
                 currentX = e.X;
                 currentY = e.Y;
-                this.Invalidate();  // this will draw the line
+                this.Invalidate(); // this will draw the line
             }
             else if (startX >= 0 && startY >= 0 && current != null)
             {
@@ -248,38 +248,71 @@ namespace Circuits
             }
         }
 
+        /// <summary>
+        /// Evaluates the current setup
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toolStripButtonEvaluate_Click(object sender, EventArgs e)
         {
+            // Loop through list and call evaluation functions on output lamps
+            // OR compound nodes, as compound nodes manage the lifetime and node heirachy for their own nodes!
             foreach (Gate g in gatesList)
-                if (g is OutputLamp)
+                if (g is OutputLamp || g is Compound)
                     g.Evaluate();
 
             this.Invalidate();
         }
 
+        /// <summary>
+        /// Copies the current gate, if any
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toolStripButtonCopy_Click(object sender, EventArgs e)
         {
+            // If no current node, return
             if (current == null)
                 return;
 
             newGate = current.Clone();
         }
 
+        /// <summary>
+        /// Starts building the compound node, unless already building one
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toolStripButtonStartCompound_Click(object sender, EventArgs e)
         {
+            // If already building a compound node, return
             if (newCompound != null)
                 return;
 
+            // Create the new compound
             newCompound = new Compound(0, 0);
         }
 
+        /// <summary>
+        /// End the compound node, if in a building state
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toolStripButtonEndCompound_Click(object sender, EventArgs e)
         {
+            // If not in building context, return
             if (newCompound == null)
                 return;
 
+            // Make the finished compound node the "new gate"
             newGate = newCompound;
 
+            // Compound now owns the gates, not this silly global state, remove from "global" state
+            List<Gate> compoundGates = newCompound.Gates;
+            foreach (Gate g in compoundGates)
+                gatesList.Remove(g);
+
+            // Null it, signifying ready to build
             newCompound = null;
         }
 
@@ -317,50 +350,45 @@ namespace Circuits
                 // Top-down event manager 
                 foreach (Gate g in gatesList)
                     if (g.IsMouseOn(e.X, e.Y))
-                        g.OnMouseClick();
+                        g.OnMouseClick(e.X, e.Y);
 
-                this.Invalidate();
+                this.Invalidate(); // marks dirty
 
-                return;
+                return; // We are here for RMB, all other interactions are on LMB, return
             }
 
-            for (int i = 0; i < 2; i++)
+            //Check if a gate is currently selected
+            if (current != null)
             {
-                //Check if a gate is currently selected
-                if (current != null)
+                //Unselect the selected gate
+                current.Selected = false;
+                current = null;
+                this.Invalidate();
+            }
+            // See if we are inserting a new gate
+            if (newGate != null)
+            {
+                newGate.MoveTo(e.X, e.Y);
+                gatesList.Add(newGate);
+                newGate = null;
+                this.Invalidate();
+            }
+            else
+            {
+                // If clicked, select / add to compound builder context
+                foreach (Gate g in gatesList)
                 {
-                    //Unselect the selected gate
-                    current.Selected = false;
-                    current = null;
-                    this.Invalidate();
-                }
-                // See if we are inserting a new gate
-                if (newGate != null)
-                {
-                    newGate.MoveTo(e.X, e.Y);
-                    gatesList.Add(newGate);
-                    newGate = null;
-                    this.Invalidate();
-                }
-                else
-                {
-                    foreach (Gate g in gatesList)
+                    if (g.IsMouseOn(e.X, e.Y))
                     {
-                        if (i == 0)
-                            if (!(g is Compound))
-                                continue;
+                        g.Selected = true;
+                        current = g;
 
-                        if (g.IsMouseOn(e.X, e.Y))
-                        {
-                            g.Selected = true;
-                            current = g;
+                        // Add to compound if in building state
+                        if (newCompound != null)
+                            newCompound.AddGate(g);
 
-                            if (newCompound != null)
-                                newCompound.AddGate(g);
-
-                            this.Invalidate();
-                            return;
-                        }
+                        this.Invalidate();
+                        return;
                     }
                 }
             }

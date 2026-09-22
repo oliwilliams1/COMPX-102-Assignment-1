@@ -72,7 +72,7 @@ namespace Circuits
         /// <summary>
         /// Toggles the value of this
         /// </summary>
-        public override void OnMouseClick()
+        public override void OnMouseClick(int x, int y)
         {
             _value = !_value;
         }
