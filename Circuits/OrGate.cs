@@ -12,14 +12,14 @@ namespace Circuits
     /// This class implements an AND gate with two inputs
     /// and one output.
     /// </summary>
-    public class AndGate : Gate
+    public class OrGate : Gate
     {
         /// <summary>
         /// Initialises the Gate.
         /// </summary>
         /// <param name="x">The x position of the gate</param>
         /// <param name="y">The y position of the gate</param>
-        public AndGate(int x, int y)
+        public OrGate(int x, int y)
         {
             //Add the two input pins to the gate
             pins.Add(new Pin(this, true, 20));
@@ -42,9 +42,9 @@ namespace Circuits
 
             // Draw Gate
             if (selected)
-                paper.DrawImage(Properties.Resources.AndGateAllRed, Left, Top, WIDTH, HEIGHT);
+                paper.DrawImage(Properties.Resources.OrGateAllRed, Left, Top, WIDTH, HEIGHT);
             else
-                paper.DrawImage(Properties.Resources.AndGate, Left, Top, WIDTH, HEIGHT);
+                paper.DrawImage(Properties.Resources.OrGate, Left, Top, WIDTH, HEIGHT);
         }
 
         /// <summary>

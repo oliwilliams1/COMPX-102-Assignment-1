@@ -12,17 +12,16 @@ namespace Circuits
     /// This class implements an AND gate with two inputs
     /// and one output.
     /// </summary>
-    public class AndGate : Gate
+    public class NotGate : Gate
     {
         /// <summary>
         /// Initialises the Gate.
         /// </summary>
         /// <param name="x">The x position of the gate</param>
         /// <param name="y">The y position of the gate</param>
-        public AndGate(int x, int y)
+        public NotGate(int x, int y)
         {
-            //Add the two input pins to the gate
-            pins.Add(new Pin(this, true, 20));
+            //Add the input pin to the gate
             pins.Add(new Pin(this, true, 20));
             //Add the output pin to the gate
             pins.Add(new Pin(this, false, 20));
@@ -42,9 +41,9 @@ namespace Circuits
 
             // Draw Gate
             if (selected)
-                paper.DrawImage(Properties.Resources.AndGateAllRed, Left, Top, WIDTH, HEIGHT);
+                paper.DrawImage(Properties.Resources.NotGateAllRed, Left, Top, WIDTH, HEIGHT);
             else
-                paper.DrawImage(Properties.Resources.AndGate, Left, Top, WIDTH, HEIGHT);
+                paper.DrawImage(Properties.Resources.NotGate, Left, Top, WIDTH, HEIGHT);
         }
 
         /// <summary>
@@ -61,11 +60,9 @@ namespace Circuits
             top = y;
             // must move the pins too
             pins[0].X = x - GAP;
-            pins[0].Y = y + GAP;
-            pins[1].X = x - GAP;
-            pins[1].Y = y + HEIGHT - GAP;
-            pins[2].X = x + WIDTH + GAP;
-            pins[2].Y = y + HEIGHT / 2;
+            pins[0].Y = y + HEIGHT / 2;
+            pins[1].X = x + WIDTH + GAP;
+            pins[1].Y = y + HEIGHT / 2;
         }
     }
 }

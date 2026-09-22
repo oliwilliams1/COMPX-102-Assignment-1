@@ -172,6 +172,21 @@ namespace Circuits
         }
 
         /// <summary>
+        /// This will create a new Or gate.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripButtonOr_Click(object sender, EventArgs e)
+        {
+            newGate = new OrGate(0, 0);
+        }
+        
+        private void toolStripButtonNot_Click(object sender, EventArgs e)
+        {
+            newGate = new NotGate(0, 0);
+        }
+
+        /// <summary>
         /// Redraws all the graphics for the current circuit.
         /// </summary>
         /// <param name="sender"></param>
@@ -202,6 +217,7 @@ namespace Circuits
                 newGate.Draw(e.Graphics);
             }
         }
+
 
         /// <summary>
         /// Handles events while the mouse button is pressed down.
