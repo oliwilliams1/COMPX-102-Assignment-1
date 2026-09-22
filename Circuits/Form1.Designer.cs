@@ -36,6 +36,11 @@
             this.toolStripButtonOutput = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonEvaluate = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonCopy = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonStartCompound = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonEndCompound = new System.Windows.Forms.ToolStripButton();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,7 +54,9 @@
             this.toolStripButtonInput,
             this.toolStripButtonOutput,
             this.toolStripButtonEvaluate,
-            this.toolStripButtonCopy});
+            this.toolStripButtonCopy,
+            this.toolStripButtonStartCompound,
+            this.toolStripButtonEndCompound});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1008, 25);
@@ -126,12 +133,68 @@
             this.toolStripButtonCopy.Text = "toolStripButton1";
             this.toolStripButtonCopy.Click += new System.EventHandler(this.toolStripButtonCopy_Click);
             // 
+            // toolStripButtonStartCompound
+            // 
+            this.toolStripButtonStartCompound.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonStartCompound.Image = global::Circuits.Properties.Resources.StartCompoundIcon;
+            this.toolStripButtonStartCompound.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonStartCompound.Name = "toolStripButtonStartCompound";
+            this.toolStripButtonStartCompound.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonStartCompound.Text = "toolStripButton1";
+            this.toolStripButtonStartCompound.Click += new System.EventHandler(this.toolStripButtonStartCompound_Click);
+            // 
+            // toolStripButtonEndCompound
+            // 
+            this.toolStripButtonEndCompound.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonEndCompound.Image = global::Circuits.Properties.Resources.EndCompoundIcon;
+            this.toolStripButtonEndCompound.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonEndCompound.Name = "toolStripButtonEndCompound";
+            this.toolStripButtonEndCompound.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonEndCompound.Text = "toolStripButton2";
+            this.toolStripButtonEndCompound.Click += new System.EventHandler(this.toolStripButtonEndCompound_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Noto Sans", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.AliceBlue;
+            this.label1.Location = new System.Drawing.Point(12, 638);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(350, 32);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "ACCESSIBILITY MODIFICATIONS:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Noto Sans", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.ForeColor = System.Drawing.Color.AliceBlue;
+            this.label2.Location = new System.Drawing.Point(14, 670);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(129, 24);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "LMB = Selection";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Noto Sans", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.AliceBlue;
+            this.label3.Location = new System.Drawing.Point(14, 694);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(156, 24);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "RMB = Toggle State";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(1008, 729);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.toolStrip1);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -158,6 +221,11 @@
         private System.Windows.Forms.ToolStripButton toolStripButtonOutput;
         private System.Windows.Forms.ToolStripButton toolStripButtonEvaluate;
         private System.Windows.Forms.ToolStripButton toolStripButtonCopy;
+        private System.Windows.Forms.ToolStripButton toolStripButtonStartCompound;
+        private System.Windows.Forms.ToolStripButton toolStripButtonEndCompound;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
     }
 }
 
