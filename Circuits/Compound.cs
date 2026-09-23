@@ -134,7 +134,6 @@ namespace Circuits
                     foreach (var x in gateWithInfos)
                         if (x.gate == fromGate)
                             p.InputWire.Draw(paper);
-                            break;
                 }
             }
         }
