@@ -304,6 +304,8 @@ namespace Circuits
             if (newCompound == null)
                 return;
 
+            newCompound.FixRelativePos();
+
             // Make the finished compound node the "new gate"
             newGate = newCompound;
 
@@ -384,7 +386,7 @@ namespace Circuits
                         current = g;
 
                         // Add to compound if in building state
-                        if (newCompound != null)
+                        if (newCompound != null && !newCompound.Gates.Contains(g))
                             newCompound.AddGate(g);
 
                         this.Invalidate();

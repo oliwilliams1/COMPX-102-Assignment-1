@@ -74,15 +74,12 @@ namespace Circuits
         /// <returns></returns>
         public override bool Evaluate()
         {
-            if (pins[0].InputWire == null) return false;
-            if (pins[1].InputWire == null) return false;
+            // Get the state of the two inputs
+            bool a = EvaluateInput(0);
+            bool b = EvaluateInput(1);
 
-            // Get input gates
-            Gate input1 = pins[0].InputWire.FromPin.Owner;
-            Gate input2 = pins[1].InputWire.FromPin.Owner;
-
-            // Return an AND operation on the values of the input gates
-            return input1.Evaluate() && input2.Evaluate();
+            // Perform an AND operation
+            return a && b;
         }
 
         /// <summary>

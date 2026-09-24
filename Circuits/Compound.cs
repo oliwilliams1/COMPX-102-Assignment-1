@@ -123,17 +123,14 @@ namespace Circuits
                 gInfo.gate.Draw(paper);
 
             // Draw wires
-            foreach (GateWithInfo gInfo in gateWithInfos)
+            List<Gate> leaves = GetLeafGates();
+            foreach (Gate leaf in leaves)
             {
-                foreach (Pin p in gInfo.gate.Pins)
+                foreach (Pin p in leaf.Pins)
                 {
-                    if (!p.IsInput || p.InputWire == null)
-                        continue;
-
-                    Gate fromGate = p.InputWire.FromPin.Owner;
-                    foreach (var x in gateWithInfos)
-                        if (x.gate == fromGate)
-                            p.InputWire.Draw(paper);
+                    if (p.IsInput && p.InputWire != null
+                        && leaves.Contains(p.InputWire.FromPin.Owner))
+                        p.InputWire.Draw(paper);
                 }
             }
         }
@@ -199,53 +196,52 @@ namespace Circuits
         /// <returns></returns>
         public override Gate Clone()
         {
-            // Create the clone component
+            // Create a clone
             Compound clone = new Compound(left, top);
+
+            // Clone children into clone
+            foreach (GateWithInfo gInfo in gateWithInfos)
+                clone.AddGate(gInfo.gate.Clone(), gInfo.dx, gInfo.dy);
+
+            List<Gate> originalGates = GetLeafGates();
+            List<Gate> cloneGates = clone.GetLeafGates();
 
             // Map original to clone
             Dictionary<Gate, Gate> map = new Dictionary<Gate, Gate>();
+            for (int i = 0; i < originalGates.Count; i++)
+                map[originalGates[i]] = cloneGates[i];
 
-            // Iterate through originals
-            foreach (GateWithInfo gInfo in gateWithInfos)
+            // Rebuild every wire connection
+            foreach (Gate originalGate in originalGates)
             {
-                // Clone each original gate and store reference into map for later
-                Gate gClone = gInfo.gate.Clone();
-                map[gInfo.gate] = gClone;
-
-                // Add the clone gate into the clone compound with relative positioning data
-                clone.AddGate(gClone, gInfo.dx, gInfo.dy);
-            }
-
-            // Rebuild wires on clone
-            foreach (GateWithInfo gInfo in gateWithInfos)
-            {
-                // Get original and clone gate for readability
-                Gate originalGate = gInfo.gate;
+                // Get associative clone
                 Gate clonedGate = map[originalGate];
 
-                // Iterate through all pins of original and copy structure to clone
+                // Iterate through the pins of the original
                 for (int i = 0; i < originalGate.Pins.Count; i++)
                 {
+                    // Skip if not an input pin or has no wire to rebuild
                     Pin originalPin = originalGate.Pins[i];
                     if (!originalPin.IsInput || originalPin.InputWire == null)
                         continue;
 
-                    // Get where this pin is from
+                    // Travel the wire to get the owning pin and gate
                     Pin fromPin = originalPin.InputWire.FromPin;
                     Gate fromGate = fromPin.Owner;
 
-                    // If fromGate is NOT within the original component, stop
+                    // Wire comes from outside, so leave it unconnected
                     if (!map.ContainsKey(fromGate))
                         continue;
 
-                    // Else, find the clone counterpart
-                    Gate clonedFromGate = map[fromGate];
-                    int fromPinIndex = fromGate.Pins.IndexOf(fromPin);
-
-                    Pin clonedFromPin = clonedFromGate.Pins[fromPinIndex];
+                    // Get the associate pin on clone
                     Pin clonedToPin = clonedGate.Pins[i];
-                    
-                    // Wire up the clone counterpart
+
+                    // If the wire exists, skip
+                    if (clonedToPin.InputWire != null)
+                        continue;
+
+                    // Create the wire on the clone
+                    Pin clonedFromPin = map[fromGate].Pins[fromGate.Pins.IndexOf(fromPin)];
                     clonedToPin.InputWire = new Wire(clonedFromPin, clonedToPin);
                 }
             }
@@ -279,6 +275,62 @@ namespace Circuits
             foreach (GateWithInfo gInfo in gateWithInfos)
                 if (gInfo.gate.IsMouseOn(x, y))
                     gInfo.gate.OnMouseClick(x, y);
+        }
+
+        public List<Gate> GetLeafGates()
+        {
+            // Flat list of leaf nodes
+            List<Gate> leaves = new List<Gate>();
+            
+            // Iterate through gates
+            foreach (GateWithInfo gInfo in gateWithInfos)
+            {
+                // If we are a compound, call recursively on child until reach leads, else add self
+                Gate nested = gInfo.gate;
+                if (nested is Compound)
+                {
+                    Compound nestedCompound = nested as Compound;
+                    leaves.AddRange(nestedCompound.GetLeafGates());
+                }
+                else
+                {
+                    leaves.Add(gInfo.gate);
+                }
+            }
+
+            // Return flattened list
+            return leaves;
+        }
+
+        /// <summary>
+        /// Sets this potion to the top-left corner of its children and updates childrens rel positions
+        /// </summary>
+        public void FixRelativePos()
+        {
+            if (gateWithInfos.Count == 0)
+                return;
+
+            // Find the top-left corner of the bounding box of all children
+            int minLeft = int.MaxValue;
+            int minTop = int.MaxValue;
+            foreach (GateWithInfo gInfo in gateWithInfos)
+            {
+                minLeft = Math.Min(minLeft, gInfo.gate.Left);
+                minTop = Math.Min(minTop, gInfo.gate.Top);
+            }
+
+            // Position at this point
+            left = minLeft;
+            top = minTop;
+
+            // Update the data
+            for (int i = 0; i < gateWithInfos.Count; i++)
+            {
+                Gate g = gateWithInfos[i].gate;
+                // Update the data
+                gateWithInfos[i] = new GateWithInfo(g, g.Left - left, g.Top - top);
+            }
+
         }
     }
 }

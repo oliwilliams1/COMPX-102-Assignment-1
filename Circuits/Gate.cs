@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Circuits
 {
@@ -24,9 +25,6 @@ namespace Circuits
         protected const int HEIGHT = 40;
         // length of the connector legs sticking out left and right
         protected const int GAP = 10;
-
-        protected Brush selectedBrush = Brushes.Red;
-        protected Brush normalBrush = Brushes.LightGray;
 
         /// <summary>
         /// This is the list of all the pins of this gate.
@@ -112,6 +110,27 @@ namespace Circuits
         /// Evaluates the value of this gate
         /// </summary>
         public abstract bool Evaluate();
+
+        /// <summary>
+        /// Helper function for input validation
+        /// </summary>
+        /// <param name="pinIndex"></param>
+        /// <returns></returns>
+        protected bool EvaluateInput(int pinIndex)
+        {
+            // Get the input wire
+            Wire w = pins[pinIndex].InputWire;
+
+            // If wire is null, display an error message
+            if (w == null)
+            {
+                MessageBox.Show("Input pin " + pinIndex + " is not connected.");
+                return false;
+            }
+
+            // Return the state of the parent
+            return w.FromPin.Owner.Evaluate();
+        }
 
         /// <summary>
         /// Returns a copy of self
